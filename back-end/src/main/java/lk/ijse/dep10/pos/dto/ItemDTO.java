@@ -12,6 +12,6 @@ import java.math.BigDecimal;
 public class ItemDTO {
     private Integer code;
     private String description;
-    private String qty;
+    private int qty;
     private BigDecimal price;
 }

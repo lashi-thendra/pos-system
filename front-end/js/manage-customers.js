@@ -1,39 +1,41 @@
 import {showProgressBar, showToast} from "./main.js";
 
 const tbodyElm = $('#tbl-customers tbody');
-const txtSearchItems = $('#txt-search-items');
-const txtCode = $("#txt-code");
-const txtDesc = $("#txt-description");
-const txtQuantity = $("#txt-quantity");
-const txtPrice = $("#txt-price");
-const btnSaveCustomer = $('#btn-save-item');
+const txtSearch = $('#txt-search');
+const txtId = $("#txt-id");
+const txtName = $("#txt-name");
+const txtContact = $("#txt-contact");
+const txtAddress = $("#txt-address");
+const btnSaveCustomer = $('#btn-save');
 
-txtSearchItems.on("input", ()=>getItems());
+tbodyElm.empty();
+
+txtSearch.on("input", ()=>getCustomers());
 btnSaveCustomer.on('click',()=>{
 
     if (!validateData()) {
         return false;
     }
-    const code = txtCode.val().trim();
-    const description = txtDesc.val().trim();
-    const quantity = txtQuantity.val().trim();
-    const price = txtPrice.val().trim();
+    const id = txtId.val().trim();
+    const name = txtName.val().trim();
+    const contact = txtContact.val().trim();
+    const address = txtAddress.val().trim();
 
-    let item = {
-        description, quantity, price
+    let customer = {
+        name, contact, address
     };
 
     const xhr = new XMLHttpRequest();
 
     xhr.addEventListener('readystatechange', ()=>{
         if(xhr.readyState === 4){
-            [txtDesc, txtPrice, txtQuantity, btnSaveCustomer].forEach(elm => elm.removeAttr('disabled'));
+            [txtName, txtAddress, txtContact, btnSaveCustomer].forEach(elm => elm.removeAttr('disabled'));
             $("#loader").css('visibility', 'hidden');
             if(xhr.status === 201){
-                txtSearchItems.val('');
-                getItems();
+                txtSearch.val('');
+                getCustomers();
                 resetForm(true);
-                txtDesc.trigger("focus");
+                txtName.trigger("focus");
                 showToast('success','Saved','Customer has been save successfully');
             }else{
                 console.log("working");
@@ -43,50 +45,50 @@ btnSaveCustomer.on('click',()=>{
         }
     })
 
-    xhr.open('POST','http://localhost:8080/pos/items', true);
+    xhr.open('POST','http://localhost:8080/pos/customers', true);
     xhr.setRequestHeader('Content-type','application/json');
     showProgressBar(xhr);
-    xhr.send(JSON.stringify(item));
+    xhr.send(JSON.stringify(customer));
     $("#loader").css('visibility', 'visible');
 
 });
 tbodyElm.on('click', ".delete", (eventData)=> {
 
-    const code = +$(eventData.target).parents("tr").children("td:first-child").text().replace('C', '');
+    const id = +$(eventData.target).parents("tr").children("td:first-child").text().replace('C', '');
     const xhr = new XMLHttpRequest();
-    const jqxhr = $.ajax(`http://localhost:8080/pos/items/${code}`, {
+    const jqxhr = $.ajax(`http://localhost:8080/pos/customers/${id}`, {
         method: 'DELETE',
         xhr: ()=> xhr
     });
     showProgressBar(xhr);
     jqxhr.done(()=> {
-        showToast('success', 'Deleted', 'Items has been deleted successfully');
+        showToast('success', 'Deleted', 'Customer has been deleted successfully');
         $(eventData.target).tooltip('dispose');
-        getItems();
+        getCustomers();
     });
     jqxhr.fail(()=> {
-        showToast('error', 'Failed', "Failed to delete the item, try again!");
+        showToast('error', 'Failed', "Failed to delete the customer, try again!");
     });
 });
 
-function getItems(){
-    const tFoot = $('#tbl-items tfoot tr td:first-child');
+function getCustomers(){
+    const tFoot = $('#tbl-customers tfoot tr td:first-child');
     const xhr = new XMLHttpRequest();
-    const searchText = $(txtSearchItems).val().trim();
+    const searchText = $(txtSearch).val().trim();
     const query = (searchText)? `?q=${searchText}`: "";
 
     xhr.addEventListener('readystatechange',()=>{
         if(xhr.readyState === 4){
             if(xhr.status === 200){
                 tbodyElm.empty();
-                let itemList = JSON.parse(xhr.responseText);
-                itemList.forEach((item)=>{
+                let customerList = JSON.parse(xhr.responseText);
+                customerList.forEach((customer)=>{
                     tbodyElm.append(`
                     <tr>
-                        <td class="text-center">${formatItemCode(item.code)}</td>
-                        <td>${item.description}</td>
-                        <td class="d-none d-xl-table-cell">${item.price}</td>
-                        <td class="quantity text-center">${item.quantity}</td>
+                        <td class="text-center">${formatCustomerId(customer.id)}</td>
+                        <td>${customer.name}</td>
+                        <td class="d-none d-xl-table-cell">${customer.address}</td>
+                        <td class="contact text-center">${customer.contact}</td>
                         <td>
                             <div class="actions d-flex gap-3 justify-content-center">
                                 <svg data-bs-toggle="tooltip" data-bs-title="Edit Customer" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
@@ -108,7 +110,7 @@ function getItems(){
                     </tr>
                     `);
                 });
-                if(itemList.length){
+                if(customerList.length){
                     tFoot.hide();
                 }else{
                     tFoot.show();
@@ -121,7 +123,7 @@ function getItems(){
                     showToast('error','Failed','connection failed');
                 }else{
                     console.log((JSON.parse(xhr.responseText)));
-                    showToast('error','Failed','Failed to fetch items');
+                    showToast('error','Failed','Failed to fetch customers');
                 }
             }
         }
@@ -132,38 +134,38 @@ function getItems(){
     });
 
     xhr.addEventListener('loadend', ()=>{
-        tFoot.text("No items records are found");
+        tFoot.text("No customer records are found");
     });
 
-    xhr.open('GET', 'http://localhost:8080/pos/items'+query ,true);
+    xhr.open('GET', 'http://localhost:8080/pos/customers'+query ,true);
     xhr.send();
 }
-function formatItemCode(code){
-    return `I${code.toString().padStart(3,'0')}`;
+function formatCustomerId(id){
+    return `C${id.toString().padStart(3,'0')}`;
 }
 function validateData(){
-    const price = txtPrice.val().trim();
-    const quantity = txtQuantity.val().trim();
-    const description = txtDesc.val().trim();
+    const address = txtAddress.val().trim();
+    const contact = txtContact.val().trim();
+    const name = txtName.val().trim();
     let valid = true;
     resetForm();
 
-    if (!price) {
-        valid = invalidate(txtPrice, "price can't be empty");
-    } else if (!/\d+/.test(price)) {
-        valid = invalidate(txtPrice, 'Invalid price');
+    if (!address) {
+        valid = invalidate(txtAddress, "Address can't be empty");
+    } else if (!/.{3,}/.test(address)) {
+        valid = invalidate(txtAddress, 'Invalid address');
     }
 
-    if (!quantity) {
-        valid = invalidate(txtQuantity, "quantity number can't be empty");
-    } else if (!/^[0-9]+$/.test(quantity)) {
-        valid = invalidate(txtQuantity, 'Invalid quantity number');
+    if (!contact) {
+        valid = invalidate(txtContact, "Contact number can't be empty");
+    } else if (!/^\d{3}-\d{7}$/.test(contact)) {
+        valid = invalidate(txtContact, 'Invalid contact number');
     }
 
-    if (!description) {
-        valid = invalidate(txtDesc, "description can't be empty");
-    } else if (!/^[A-Za-z ]+$/.test(description)) {
-        valid = invalidate(txtDesc, "Invalid description");
+    if (!name) {
+        valid = invalidate(txtName, "Name can't be empty");
+    } else if (!/^[A-Za-z ]+$/.test(name)) {
+        valid = invalidate(txtName, "Invalid name");
     }
 
     return valid;
@@ -176,10 +178,10 @@ function invalidate(txt, msg) {
     return false;
 }
 function resetForm(clearData) {
-    [txtCode, txtDesc, txtPrice, txtQuantity].forEach(txt => {
+    [txtId, txtName, txtAddress, txtContact].forEach(txt => {
         txt.removeClass("is-invalid animate__shakeX");
         if (clearData) txt.val('');
     });
 }
 
-getItems();
+getCustomers();
