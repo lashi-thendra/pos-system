@@ -8,15 +8,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +47,33 @@ public class CustomerController {
             return new ResponseEntity<>(new ResponseErrorDTO(500, e.getMessage()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @PostMapping
+    public ResponseEntity<?> saveCustomer(@RequestBody CustomerDTO customer){
+        try(Connection connection =  pool.getConnection()){
+            PreparedStatement stm = connection.prepareStatement("INSERT INTO customer (name, address, contact) values (?,?,?)",
+                    Statement.RETURN_GENERATED_KEYS);
+            stm.setString(1, customer.getName());
+            stm.setString(2, customer.getAddress());
+            stm.setString(3, customer.getContact());
+            stm.executeUpdate();
+
+            ResultSet generatedKeys = stm.getGeneratedKeys();
+            generatedKeys.next();
+            int id = generatedKeys.getInt(1);
+            customer.setId(id);
+            return new ResponseEntity<>(customer, HttpStatus.CREATED);
+        } catch (SQLException e) {
+            if(e.getSQLState().equals("2300")){
+                return new ResponseEntity<>(new ResponseErrorDTO(HttpStatus.CONFLICT.value(), e.getMessage()),
+                        HttpStatus.CONFLICT);
+            }else{
+                return new ResponseEntity<>(new ResponseErrorDTO(HttpStatus.CONFLICT.value(), e.getMessage()),
+                        HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+
     }
 
 }

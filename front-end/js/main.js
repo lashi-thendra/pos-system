@@ -26,3 +26,18 @@ export function showToast(toastType, header, message){
     $('#toast .toast-body').text(message);
     toast.toast('show');
 }
+
+export function showProgressBar(xhr){
+    const progressBar = $('#progress-bar');
+    xhr.addEventListener('loadstart', ()=> progressBar.width('5%'));
+    xhr.addEventListener('progress', eventData=>{
+        const downloadedBytes = eventData.loaded;
+        const totalBytes = eventData.total;
+        const progress = downloadedBytes/totalBytes * 100;
+        progressBar.width(`${progress}%`);
+    })
+    xhr.addEventListener('loadend',()=>{
+        progressBar.width('100%');
+        setTimeout(()=> progressBar.width('0%'), 500);
+    })
+}
