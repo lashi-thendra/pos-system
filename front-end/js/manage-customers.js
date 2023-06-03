@@ -1,15 +1,22 @@
+import {showToast} from "./main.js";
+
 const tbodyElm = $('#tbl-customers tbody');
+const txtSearch = $('#txt-search');
 
 tbodyElm.empty();
 
+txtSearch.on("input", ()=>getCustomers());
 
 function getCustomers(){
     const tFoot = $('#tbl-customers tfoot tr td:first-child');
     const xhr = new XMLHttpRequest();
+    const searchText = $(txtSearch).val().trim();
+    const query = (searchText)? `?q=${searchText}`: "";
 
     xhr.addEventListener('readystatechange',()=>{
         if(xhr.readyState === 4){
             if(xhr.status === 200){
+                tbodyElm.empty();
                 let customerList = JSON.parse(xhr.responseText);
                 customerList.forEach((customer)=>{
                     tbodyElm.append(`
@@ -39,8 +46,21 @@ function getCustomers(){
                     </tr>
                     `);
                 });
+                if(customerList.length){
+                    tFoot.hide();
+                }else{
+                    tFoot.show();
+                }
             }else{
-                console.log("failed to fetch customers");
+                tbodyElm.empty();
+                tFoot.show();
+                if(!xhr.responseText){
+                    console.log("couldn't connect with the server");
+                    showToast('error','Failed','connection failed');
+                }else{
+                    console.log((JSON.parse(xhr.responseText)));
+                    showToast('error','Failed','Failed to fetch customers');
+                }
             }
         }
     });
@@ -53,10 +73,9 @@ function getCustomers(){
         tFoot.text("No customer records are found");
     });
 
-    xhr.open('GET', 'http://localhost:8080/pos/customers' ,true);
+    xhr.open('GET', 'http://localhost:8080/pos/customers'+query ,true);
     xhr.send();
 }
-
 function formatCustomerId(id){
     return `C${id.toString().padStart(3,'0')}`;
 }
