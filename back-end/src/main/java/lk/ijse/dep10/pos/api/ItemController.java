@@ -1,7 +1,6 @@
 package lk.ijse.dep10.pos.api;
 
 import lk.ijse.dep10.pos.dto.CustomerDTO;
-import lk.ijse.dep10.pos.dto.ItemDTO;
 import lk.ijse.dep10.pos.dto.ResponseErrorDTO;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,32 +16,32 @@ import java.util.List;
 
 @Controller
 @CrossOrigin
-@RequestMapping("/items")
-public class CustomerController {
+@RequestMapping("/customers")
+public class ItemController {
 
     @Autowired
     private BasicDataSource pool;
 
     @GetMapping
-    public ResponseEntity<?> getItems(@RequestParam(value = "q", required = false) String query){
+    public ResponseEntity<?> getCustomers(@RequestParam(value = "q", required = false) String query){
         if(query == null) query = "";
         try(Connection connection = pool.getConnection()){
-            PreparedStatement stm = connection.prepareStatement("SELECT * FROM item WHERE code LIKE ? OR description LIKE ?");
+            PreparedStatement stm = connection.prepareStatement("SELECT * FROM customer WHERE id LIKE ? OR NAME LIKE ?");
             query = "%" +  query + "%";
             stm.setString(1, query);
             stm.setString(2, query);
             ResultSet rst = stm.executeQuery();
-            List<CustomerDTO> itemList = new ArrayList<>();
+            List<CustomerDTO> customerList = new ArrayList<>();
             while (rst.next()){
-                int code = rst.getInt("code");
-                String description = rst.getString("description");
-                String qty = rst.getString("qty");
-                String price = rst.getString("unit_price");
-                itemList.add(new CustomerDTO(code, description, qty, price));
+                int id = rst.getInt("id");
+                String name = rst.getString("name");
+                String address = rst.getString("address");
+                String contact = rst.getString("contact");
+                customerList.add(new CustomerDTO(id, name, address, contact));
             }
             HttpHeaders headers = new HttpHeaders();
-            headers.add("X-count", itemList.size() + "");
-            return new ResponseEntity<>(itemList, headers, HttpStatus.OK);
+            headers.add("X-count", customerList.size() + "");
+            return new ResponseEntity<>(customerList, headers, HttpStatus.OK);
         } catch (SQLException e) {
             e.printStackTrace();
             return new ResponseEntity<>(new ResponseErrorDTO(500, e.getMessage()),
@@ -51,20 +50,20 @@ public class CustomerController {
     }
 
     @PostMapping
-    public ResponseEntity<?> saveItem(@RequestBody ItemDTO item){
+    public ResponseEntity<?> saveCustomer(@RequestBody CustomerDTO customer){
         try(Connection connection =  pool.getConnection()){
-            PreparedStatement stm = connection.prepareStatement("INSERT INTO item (description, qty, unit_price) values (?,?,?)",
+            PreparedStatement stm = connection.prepareStatement("INSERT INTO customer (name, address, contact) values (?,?,?)",
                     Statement.RETURN_GENERATED_KEYS);
-            stm.setInt(1, item.getCode());
-            stm.setString(2, item.getQty());
-            stm.setBigDecimal(3, item.getPrice());
+            stm.setString(1, customer.getName());
+            stm.setString(2, customer.getAddress());
+            stm.setString(3, customer.getContact());
             stm.executeUpdate();
 
             ResultSet generatedKeys = stm.getGeneratedKeys();
             generatedKeys.next();
-            int code = generatedKeys.getInt(1);
-            item.setCode(code);
-            return new ResponseEntity<>(item, HttpStatus.CREATED);
+            int id = generatedKeys.getInt(1);
+            customer.setId(id);
+            return new ResponseEntity<>(customer, HttpStatus.CREATED);
         } catch (SQLException e) {
             if(e.getSQLState().equals("2300")){
                 return new ResponseEntity<>(new ResponseErrorDTO(HttpStatus.CONFLICT.value(), e.getMessage()),
@@ -76,16 +75,16 @@ public class CustomerController {
         }
     }
 
-    @DeleteMapping("/{code}")
-    public ResponseEntity<?> deleteCustomer(@PathVariable("code") String code){
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteCustomer(@PathVariable("id") String id){
         try(Connection connection  = pool.getConnection()){
-            PreparedStatement stm = connection.prepareStatement("DELETE FROM item WHERE code = ?");
-            stm.setString(1, code);
+            PreparedStatement stm = connection.prepareStatement("DELETE FROM customer WHERE id = ?");
+            stm.setString(1, id);
             int effectedRows = stm.executeUpdate();
             if(effectedRows == 1){
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }else{
-                ResponseErrorDTO response = new ResponseErrorDTO(404, "item code Not Found");
+                ResponseErrorDTO response = new ResponseErrorDTO(404, "Customer ID Not Found");
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
         } catch (SQLException e) {
