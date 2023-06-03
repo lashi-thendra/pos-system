@@ -8,9 +8,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class WebRootConfig {
 
-    @Autowired
-    private BasicDataSource pool;
-
     @Bean
     public BasicDataSource dataSource(){
         BasicDataSource bds = new BasicDataSource();
