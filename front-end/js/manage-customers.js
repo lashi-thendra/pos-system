@@ -14,7 +14,7 @@ function getCustomers(){
                 customerList.forEach((customer)=>{
                     tbodyElm.append(`
                     <tr>
-                        <td class="text-center">${customer.id}</td>
+                        <td class="text-center">${formatCustomerId(customer.id)}</td>
                         <td>${customer.name}</td>
                         <td class="d-none d-xl-table-cell">${customer.address}</td>
                         <td class="contact text-center">${customer.contact}</td>
@@ -57,5 +57,8 @@ function getCustomers(){
     xhr.send();
 }
 
+function formatCustomerId(id){
+    return `C${id.toString().padStart(3,'0')}`;
+}
 
 getCustomers();
