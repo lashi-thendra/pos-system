@@ -12,7 +12,7 @@ export function showToast(toastType, header, message){
     toast.removeClass('text-bg-success text-bg-warning text-bg-danger');
     switch(toastType){
         case 'success':
-            toast.addClass('text-bg-sucess');
+            toast.addClass('text-bg-success');
             break;
         case 'warning':
             toast.addClass('text-bg-warning');

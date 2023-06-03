@@ -51,7 +51,25 @@ btnSaveCustomer.on('click',()=>{
     xhr.send(JSON.stringify(customer));
     $("#loader").css('visibility', 'visible');
 
-})
+});
+tbodyElm.on('click', ".delete", (eventData)=> {
+
+    const id = +$(eventData.target).parents("tr").children("td:first-child").text().replace('C', '');
+    const xhr = new XMLHttpRequest();
+    const jqxhr = $.ajax(`http://localhost:8080/pos/customers/${id}`, {
+        method: 'DELETE',
+        xhr: ()=> xhr
+    });
+    showProgressBar(xhr);
+    jqxhr.done(()=> {
+        showToast('success', 'Deleted', 'Customer has been deleted successfully');
+        $(eventData.target).tooltip('dispose');
+        getCustomers();
+    });
+    jqxhr.fail(()=> {
+        showToast('error', 'Failed', "Failed to delete the customer, try again!");
+    });
+});
 
 function getCustomers(){
     const tFoot = $('#tbl-customers tfoot tr td:first-child');
