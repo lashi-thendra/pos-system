@@ -22,6 +22,13 @@ socket.addEventListener('message',(eventData)=>{
     customer = JSON.parse(eventData.data);
     customerNameElm.text(customer.name);
 });
+$('#btn-clear-customer').on('click',()=>{
+   customer = null;
+   customerNameElm.text("walk-in-customer");
+   txtCustomer.val("");
+   txtCustomer.removeClass("is-invalid");
+   txtCustomer.trigger("focus");
+});
 
 
 function findCustomer() {
