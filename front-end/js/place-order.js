@@ -1,5 +1,6 @@
 import {Cart} from "./cart.js";
 import Big from "../node_modules/big.js/big.mjs";
+import {DateTimeFormatter, LocalDateTime} from '../node_modules/@js-joda/core/dist/js-joda.esm.js';
 
 const WS_API_BASE_URL = "ws://localhost:8080/pos";
 const REST_API_BASE_URL = "http://localhost:8080/pos";
@@ -12,6 +13,8 @@ const txtCode = $('#txt-code');
 const frmOrder = $('#frm-order');
 const txtQty = $('#txt-qty');
 const netTotalElm = $("#net-total");
+const btnPlaceOrder = $('#btn-place-order');
+const orderDateTimeElm = $("#order-date-time");
 
 let customer = null;
 let socket = null;
@@ -65,6 +68,7 @@ frmOrder.on('submit',(eventData)=>{
         return;
     }
 
+    item.qty = +txtQty.val();
     txtQty.removeClass('is-invalid');
 
     console.log(cart)
@@ -100,6 +104,8 @@ tbodyElm.on('click', 'svg.delete', (eventData) => {
         txtCode.trigger('focus');
     }
 });
+// btnPlaceOrder.on('click',()=> placeOrder());
+setInterval(setDateTime, 1000);
 
 
 function findCustomer() {
@@ -148,7 +154,6 @@ function findItem(code){
         txtCode.removeAttr('disabled');
     });
 }
-
 export function formatPrice(price) {
     return new Intl.NumberFormat('en-LK', {
         style: 'currency',
@@ -157,7 +162,6 @@ export function formatPrice(price) {
         maximumFractionDigits: 2
     }).format(price);
 }
-
 export function formatNumber(number) {
     return new Intl.NumberFormat('en-LK', {
         style: 'decimal',
@@ -194,11 +198,14 @@ function addItemToTable(item) {
                 </tr>`);
     tbodyElm.append(trElm);
 }
-
 function updateOrderDetails() {
     const id = cart.customer?.id.toString().padStart(3, '0');
     txtCustomer.val(id ? 'C' + id : '');
     customerNameElm.text(cart.customer?.name);
     cart.itemList.forEach(item => addItemToTable(item));
     netTotalElm.text(formatPrice(cart.getTotal()));
+}
+function setDateTime() {
+    const now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    orderDateTimeElm.text(now);
 }
