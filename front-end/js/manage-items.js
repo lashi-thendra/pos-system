@@ -18,7 +18,7 @@ btnSaveItem.on('click',()=>{
     if (!validateData()) {
         return false;
     }
-    const code = txtCode.val().trim();
+
     const description = txtDesc.val().trim();
     const qty = txtQuantity.val().trim();
     const price = txtPrice.val().trim();
@@ -139,7 +139,7 @@ function getItems(){
         tFoot.text("No item records are found");
     });
 
-    xhr.open('GET', 'http://localhost:8080/pos/items'+query ,true);
+    xhr.open('GET', `http://localhost:8080/pos/items/${query}`,true);
     xhr.send();
 }
 function formatItemCode(code){

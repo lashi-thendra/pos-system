@@ -1,10 +1,9 @@
 package lk.ijse.dep10.pos.api;
 
-import lk.ijse.dep10.pos.dto.CustomerDTO;
+
 import lk.ijse.dep10.pos.dto.ItemDTO;
 import lk.ijse.dep10.pos.dto.ResponseErrorDTO;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.springframework.beans.BeanInfoFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -25,8 +24,8 @@ public class ItemController {
     @Autowired
     private BasicDataSource pool;
 
-    @GetMapping
-    public ResponseEntity<?> getItems(@RequestParam(value = "q", required = false) String query){
+    @GetMapping("{id}")
+    public ResponseEntity<?> getItems(@RequestParam(value = "id", required = false) String query){
         System.out.println("get Items method");
         if(query == null) query = "";
         try(Connection connection = pool.getConnection()){
