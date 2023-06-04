@@ -1,6 +1,7 @@
 import {Cart} from "./cart.js";
 import Big from "../node_modules/big.js/big.mjs";
 import {DateTimeFormatter, LocalDateTime} from '../node_modules/@js-joda/core/dist/js-joda.esm.js';
+import {showProgressBar, showToast} from "./main.js";
 
 const WS_API_BASE_URL = "ws://localhost:8080/pos";
 const REST_API_BASE_URL = "http://localhost:8080/pos";
@@ -104,7 +105,7 @@ tbodyElm.on('click', 'svg.delete', (eventData) => {
         txtCode.trigger('focus');
     }
 });
-// btnPlaceOrder.on('click',()=> placeOrder());
+btnPlaceOrder.on('click',()=> placeOrder());
 setInterval(setDateTime, 1000);
 
 
@@ -208,4 +209,34 @@ function updateOrderDetails() {
 function setDateTime() {
     const now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     orderDateTimeElm.text(now);
+}
+function placeOrder(){
+    if (!cart.itemList.length) return;
+
+    cart.dateTime = orderDateTimeElm.text();
+    btnPlaceOrder.attr('disabled', true);
+    const xhr = new XMLHttpRequest();
+
+    const jqxhr = $.ajax(`${REST_API_BASE_URL}/orders`, {
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(cart),
+        xhr: ()=> xhr
+    });
+
+    showProgressBar(xhr);
+
+    jqxhr.done(()=> {
+        cart.clear();
+        $("#btn-clear-customer").trigger('click');
+        txtCode.val("");
+        txtCode.trigger("input");
+        tbodyElm.empty();
+        tFootElm.show();
+        showToast('success', 'Success', 'Order has been placed successfully');
+    });
+    jqxhr.fail(()=> {
+        showToast('error', 'Failed', "Failed to place the order, try again!");
+    });
+    jqxhr.always(()=> btnPlaceOrder.removeAttr('disabled'));
 }
