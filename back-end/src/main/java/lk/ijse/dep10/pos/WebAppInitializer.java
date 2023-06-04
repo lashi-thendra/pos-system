@@ -1,5 +1,6 @@
 package lk.ijse.dep10.pos;
 
+import lk.ijse.dep10.pos.dto.WebSocketConfig;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
@@ -10,7 +11,7 @@ public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServlet
 
     @Override
     protected Class<?>[] getServletConfigClasses() {
-        return new Class[]{WebAppConfig.class};
+        return new Class[]{WebAppConfig.class, WebSocketConfig.class};
     }
 
     @Override
