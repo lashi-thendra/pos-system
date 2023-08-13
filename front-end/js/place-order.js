@@ -1,10 +1,8 @@
 import {Cart} from "./cart.js";
 import Big from "../node_modules/big.js/big.mjs";
 import {DateTimeFormatter, LocalDateTime} from '../node_modules/@js-joda/core/dist/js-joda.esm.js';
-import {showProgressBar, showToast} from "./main.js";
+import {showProgressBar, showToast , REST_API_BASE_URL, WS_API_BASE_URL} from "./main.js";
 
-const WS_API_BASE_URL = "ws://localhost:8080/pos";
-const REST_API_BASE_URL = "http://localhost:8080/pos";
 const tbodyElm = $('#tbl-order tbody');
 const tFootElm = $("#tbl-order tfoot");
 const txtCustomer = $('#txt-customer');
@@ -23,7 +21,7 @@ let item = null;
 let cart;
 
 
-socket = new WebSocket(`${WS_API_BASE_URL}/customer-ws`);
+socket = new WebSocket(`${WS_API_BASE_URL}/customers-ws`);
 cart = new Cart((total)=> netTotalElm.text(formatPrice(total)));
 updateOrderDetails();
 

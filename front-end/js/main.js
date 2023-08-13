@@ -7,6 +7,9 @@
     })
   })();
 
+export const REST_API_BASE_URL = 'http://localhost:8080/pos/api/v1';
+export const WS_API_BASE_URL = 'ws://localhost:8080/pos/api/v1';
+
 export function showToast(toastType, header, message){
     const toast = $('#toast .toast');
     toast.removeClass('text-bg-success text-bg-warning text-bg-danger');

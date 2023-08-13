@@ -1,4 +1,4 @@
-import {showProgressBar, showToast} from "./main.js";
+import {showProgressBar, showToast, WS_API_BASE_URL, REST_API_BASE_URL} from "./main.js";
 
 const tbodyElm = $('#tbl-customers tbody');
 const txtSearch = $('#txt-search');
@@ -45,7 +45,7 @@ btnSaveCustomer.on('click',()=>{
         }
     })
 
-    xhr.open('POST','http://localhost:8080/pos/customers', true);
+    xhr.open('POST',`${REST_API_BASE_URL}/customers`, true);
     xhr.setRequestHeader('Content-type','application/json');
     showProgressBar(xhr);
     xhr.send(JSON.stringify(customer));
@@ -56,7 +56,7 @@ tbodyElm.on('click', ".delete", (eventData)=> {
 
     const id = +$(eventData.target).parents("tr").children("td:first-child").text().replace('C', '');
     const xhr = new XMLHttpRequest();
-    const jqxhr = $.ajax(`http://localhost:8080/pos/customers/${id}`, {
+    const jqxhr = $.ajax(`${REST_API_BASE_URL}/customers/${id}`, {
         method: 'DELETE',
         xhr: ()=> xhr
     });
@@ -137,7 +137,7 @@ function getCustomers(){
         tFoot.text("No customer records are found");
     });
 
-    xhr.open('GET', 'http://localhost:8080/pos/customers'+query ,true);
+    xhr.open('GET', `${REST_API_BASE_URL}/customers`+query ,true);
     xhr.send();
 }
 function formatCustomerId(id){

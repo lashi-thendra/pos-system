@@ -1,4 +1,4 @@
-import {showProgressBar, showToast} from "./main.js";
+import {REST_API_BASE_URL, showProgressBar, showToast} from "./main.js";
 
 
 const tbodyElmItems = $('#tbl-items tbody');
@@ -47,7 +47,7 @@ btnSaveItem.on('click',()=>{
         }
     })
 
-    xhr.open('POST','http://localhost:8080/pos/items', true);
+    xhr.open('POST',`${REST_API_BASE_URL}/items`, true);
     xhr.setRequestHeader('Content-type','application/json');
     showProgressBar(xhr);
     xhr.send(JSON.stringify(item));
@@ -58,7 +58,7 @@ tbodyElmItems.on('click', ".delete", (eventData)=> {
 
     const id = +$(eventData.target).parents("tr").children("td:first-child").text().replace('C', '');
     const xhr = new XMLHttpRequest();
-    const jqxhr = $.ajax(`http://localhost:8080/pos/items/${id}`, {
+    const jqxhr = $.ajax(`${REST_API_BASE_URL}/items/${id}`, {
         method: 'DELETE',
         xhr: ()=> xhr
     });
@@ -139,7 +139,7 @@ function getItems(){
         tFoot.text("No item records are found");
     });
 
-    xhr.open('GET', `http://localhost:8080/pos/items/${query}`,true);
+    xhr.open('GET', `${REST_API_BASE_URL}/items/${query}`,true);
     xhr.send();
 }
 function formatItemCode(code){
