@@ -13,7 +13,7 @@ import java.sql.*;
 
 @Controller
 @CrossOrigin
-@RequestMapping("/orders")
+@RequestMapping("/api/v1/orders")
 public class OrderController {
     @Autowired
     private BasicDataSource pool;

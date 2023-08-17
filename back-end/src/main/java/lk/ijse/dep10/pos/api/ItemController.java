@@ -18,13 +18,13 @@ import java.util.List;
 
 @Controller
 @CrossOrigin
-@RequestMapping("/items")
+@RequestMapping("/api/v1/items")
 public class ItemController {
 
     @Autowired
     private BasicDataSource pool;
 
-    @GetMapping("{id}")
+    @GetMapping
     public ResponseEntity<?> getItems(@RequestParam(value = "id", required = false) String query){
         System.out.println("get Items method");
         if(query == null) query = "";
