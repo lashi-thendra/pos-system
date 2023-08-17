@@ -48,6 +48,7 @@ btnSaveCustomer.on('click',()=>{
     xhr.open('POST',`${REST_API_BASE_URL}/customers`, true);
     xhr.setRequestHeader('Content-type','application/json');
     showProgressBar(xhr);
+    console.log(customer);
     xhr.send(JSON.stringify(customer));
     $("#loader").css('visibility', 'visible');
 
@@ -81,6 +82,7 @@ function getCustomers(){
         if(xhr.readyState === 4){
             if(xhr.status === 200){
                 tbodyElm.empty();
+                console.log(xhr.responseText);
                 let customerList = JSON.parse(xhr.responseText);
                 customerList.forEach((customer)=>{
                     tbodyElm.append(`

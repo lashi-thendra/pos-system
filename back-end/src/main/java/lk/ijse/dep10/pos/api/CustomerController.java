@@ -4,16 +4,11 @@ import lk.ijse.dep10.pos.business.BOFactory;
 import lk.ijse.dep10.pos.business.BOType;
 import lk.ijse.dep10.pos.business.custom.CustomerBO;
 import lk.ijse.dep10.pos.dto.CustomerDTO;
-import lk.ijse.dep10.pos.dto.ResponseErrorDTO;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController

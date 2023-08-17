@@ -40,6 +40,7 @@ public class JdbcTemplate {
         while (rst.next()) {
             rowList.add(rowMapper.mapRow(rst, rowList.size()));
         }
+        System.out.println(rowList);
         return rowList;
     }
 

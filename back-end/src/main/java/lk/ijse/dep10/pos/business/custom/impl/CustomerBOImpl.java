@@ -7,11 +7,13 @@ import lk.ijse.dep10.pos.business.util.Transformer;
 import lk.ijse.dep10.pos.dao.DAOFactory;
 import lk.ijse.dep10.pos.dao.DAOType;
 import lk.ijse.dep10.pos.dao.custom.CustomerDAO;
+import lk.ijse.dep10.pos.dao.custom.OrderCustomerDAO;
 import lk.ijse.dep10.pos.dto.CustomerDTO;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CustomerBOImpl implements CustomerBO {
 
@@ -24,6 +26,7 @@ public class CustomerBOImpl implements CustomerBO {
     }
 
     private final CustomerDAO customerDAO = DAOFactory.getInstance().getDAO(DAOType.CUSTOMER);
+    private final OrderCustomerDAO orderCustomerDAO = DAOFactory.getInstance().getDAO(DAOType.ORDER_CUSTOMER);
 
     @Override
     public CustomerDTO saveCustomer(CustomerDTO customerDTO) throws Exception {
@@ -57,16 +60,37 @@ public class CustomerBOImpl implements CustomerBO {
 
     @Override
     public void deleteCustomerById(int customerId) throws Exception {
+        try (Connection connection = dataSource.getConnection()) {
+            customerDAO.setConnection(connection);
+            orderCustomerDAO.setConnection(connection);
 
+            if (orderCustomerDAO.existsOrderByCustomerId(customerId)) {
+                throw new BusinessException(BusinessExceptionType.INTEGRITY_VIOLATION, "Delete failed: Customer ID: " + customerId + " is already associated with some orders");
+            }
+
+            customerDAO.deleteById(customerId);
+        }
     }
 
     @Override
     public CustomerDTO findCustomerByIdOrContact(String idOrContact) throws Exception {
-        return null;
+        try (Connection connection = dataSource.getConnection()) {
+            customerDAO.setConnection(connection);
+
+            return customerDAO.findCustomerByIdOrContact(idOrContact)
+                    .map(transformer::fromCustomerEntity)
+                    .orElseThrow(() -> new BusinessException(BusinessExceptionType.RECORD_NOT_FOUND,
+                            "No customer record is associated with the id or contact: " + idOrContact));
+        }
     }
 
     @Override
     public List<CustomerDTO> findCustomers(String query) throws Exception {
-        return null;
+        try (Connection connection = dataSource.getConnection()) {
+            customerDAO.setConnection(connection);
+
+            return customerDAO.findCustomers(query).stream()
+                    .map(transformer::fromCustomerEntity).collect(Collectors.toList());
+        }
     }
 }
