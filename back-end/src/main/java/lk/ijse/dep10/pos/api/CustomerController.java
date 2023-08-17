@@ -27,34 +27,6 @@ public class CustomerController {
     @Autowired
     private BasicDataSource pool;
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler({MethodArgumentNotValidException.class,
-    MethodArgumentTypeMismatchException.class})
-    public Map<String, Object> handleValidationException(Exception exp) {
-        LinkedHashMap<String, Object> errorAttributes = new LinkedHashMap<>();
-        errorAttributes.put("timestamp", LocalDateTime.now().toString());
-        errorAttributes.put("status", 400);
-        errorAttributes.put("error", HttpStatus.BAD_REQUEST);
-
-        if(exp instanceof MethodArgumentNotValidException){
-            MethodArgumentNotValidException mExp = (MethodArgumentNotValidException) exp;
-            errorAttributes.put("message", "Data validation failed");
-            List<Map<String, Object>> errorList = new ArrayList<>();
-            for (FieldError fieldError : mExp.getFieldErrors()) {
-                Map<String, Object> error = new LinkedHashMap<>();
-                error.put("field", fieldError.getField());
-                error.put("rejected", fieldError.getRejectedValue());
-                error.put("message", fieldError.getDefaultMessage());
-                errorList.add(error);
-            }
-            errorAttributes.put("errors", errorList);
-        }else{
-            MethodArgumentTypeMismatchException mExp = (MethodArgumentTypeMismatchException) exp;
-            errorAttributes.put("message", "Invalid value for " + mExp.getName());
-        }
-        return errorAttributes;
-    }
-
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PatchMapping("/{id}")
     public void updateCustomer(@PathVariable("id") int customerId,
