@@ -57,6 +57,7 @@ btnSaveItem.on('click',()=>{
 tbodyElmItems.on('click', ".delete", (eventData)=> {
 
     const id = +$(eventData.target).parents("tr").children("td:first-child").text().replace('C', '');
+    console.log(id);
     const xhr = new XMLHttpRequest();
     const jqxhr = $.ajax(`${REST_API_BASE_URL}/items/${id}`, {
         method: 'DELETE',

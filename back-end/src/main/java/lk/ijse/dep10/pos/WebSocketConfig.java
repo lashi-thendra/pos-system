@@ -17,8 +17,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(customerWSHandler(), "/api/v1/customers-ws")
-                .setAllowedOrigins("*")
-                .addInterceptors(new HttpSessionHandshakeInterceptor());
+                .setAllowedOrigins("*");
     }
 
     @Bean

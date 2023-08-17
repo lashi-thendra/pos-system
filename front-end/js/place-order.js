@@ -20,8 +20,9 @@ let socket = null;
 let item = null;
 let cart;
 
-
-socket = new WebSocket(`${WS_API_BASE_URL}/customers-ws`);
+console.log("trying to connect with web socket");
+socket = new WebSocket(`ws://localhost:8080/pos/api/v1/customers-ws`);
+console.log("connected with web socket");
 cart = new Cart((total)=> netTotalElm.text(formatPrice(total)));
 updateOrderDetails();
 
