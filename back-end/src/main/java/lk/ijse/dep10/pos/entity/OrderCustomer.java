@@ -9,7 +9,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderCustomer implements Serializable {
+public class OrderCustomer implements SuperEntity {
     private int orderId;
     private int customerId;
 }

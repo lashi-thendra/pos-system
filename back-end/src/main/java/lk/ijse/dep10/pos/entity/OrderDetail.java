@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderDetail implements Serializable {
+public class OrderDetail implements SuperEntity {
 
     private OrderDetailPK orderDetailPK;
     private BigDecimal unitPrice;

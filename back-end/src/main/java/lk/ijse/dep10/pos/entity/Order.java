@@ -10,11 +10,11 @@ import java.sql.Timestamp;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Order implements Serializable {
+public class Order implements SuperEntity {
     private int id;
-    private Timestamp timestamp;
+    private Timestamp datetime;
 
     public Order(Timestamp timestamp) {
-        this.timestamp = timestamp;
+        this.datetime = datetime;
     }
 }

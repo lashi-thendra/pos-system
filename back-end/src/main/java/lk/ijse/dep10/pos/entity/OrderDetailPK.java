@@ -8,7 +8,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderDetailPK implements Serializable {
+public class OrderDetailPK implements SuperEntity {
     private int orderId;
     private String itemCode;
 }
