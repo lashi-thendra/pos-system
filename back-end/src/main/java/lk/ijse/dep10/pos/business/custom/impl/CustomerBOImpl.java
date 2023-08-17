@@ -56,7 +56,7 @@ public class CustomerBOImpl implements CustomerBO {
     }
 
     @Override
-    public void deleteCustomerByCode(int customerId) throws Exception {
+    public void deleteCustomerById(int customerId) throws Exception {
 
     }
 
