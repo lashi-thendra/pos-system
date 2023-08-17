@@ -17,7 +17,7 @@ public class JdbcTemplate {
     private PreparedStatement getStatement(String sql, Object... args) throws Exception {
         PreparedStatement stm = connection.prepareStatement(sql);
         for (int i = 1; i <= args.length; i++) {
-            stm.setObject(i, args[i]);
+            stm.setObject(i, args[i-1]);
         }
         return stm;
     }
