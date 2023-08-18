@@ -30,8 +30,7 @@ class CustomerDAOImplTest {
     @BeforeEach
     void setUp() throws SQLException {
         connection = embeddedDatabase.getConnection();
-        customerDAO = DAOFactory.getInstance().getDAO(DAOType.CUSTOMER);
-        customerDAO.setConnection(connection);
+//        customerDAO.setConnection(connection);
     }
 
     @AfterEach

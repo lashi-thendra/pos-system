@@ -15,10 +15,11 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @ComponentScan
 public class WebAppConfig {
 
-
     @Bean
     public MethodValidationPostProcessor methodValidationPostProcessor(){
         return new MethodValidationPostProcessor();
     }
+
+
 
 }

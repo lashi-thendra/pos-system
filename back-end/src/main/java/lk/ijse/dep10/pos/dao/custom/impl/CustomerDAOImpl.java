@@ -1,13 +1,12 @@
 package lk.ijse.dep10.pos.dao.custom.impl;
 
 import lk.ijse.dep10.pos.dao.custom.CustomerDAO;
-import lk.ijse.dep10.pos.dao.util.GeneratedKeyHolder;
-import lk.ijse.dep10.pos.dao.util.JdbcTemplate;
-import lk.ijse.dep10.pos.dao.util.KeyHolder;
 import lk.ijse.dep10.pos.entity.Customer;
-import org.springframework.stereotype.Component;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
@@ -15,13 +14,13 @@ import java.util.Optional;
 
 import static lk.ijse.dep10.pos.dao.util.Mappers.CUSTOMER_ROW_MAPPER;
 
-@Component
+@Repository
 public class CustomerDAOImpl implements CustomerDAO {
 
     private JdbcTemplate jdbcTemplate;
 
-    public void setConnection(Connection connection) {
-        jdbcTemplate = new JdbcTemplate(connection);
+    public CustomerDAOImpl(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate  = jdbcTemplate;
     }
 
     @Override
@@ -70,6 +69,7 @@ public class CustomerDAOImpl implements CustomerDAO {
     public List<Customer> findCustomers(String query) throws Exception {
         query = (query == null)? "": query;
         query = "%" + query + "%";
+        System.out.println(jdbcTemplate + ": jdbctemplate");
         return jdbcTemplate.query("SELECT * FROM customer WHERE id LIKE ? OR name LIKE ? OR address LIKE ? OR contact LIKE ?", CUSTOMER_ROW_MAPPER,
                 query, query,query,query
         );
@@ -87,4 +87,11 @@ public class CustomerDAOImpl implements CustomerDAO {
         return jdbcTemplate.queryForObject("SELECT * FROM customer WHERE contact=?",
                 CUSTOMER_ROW_MAPPER, contact) != null;
     }
+
+    @Override
+    public boolean existsCustomerByContactAndNotId(String contact, Integer id) throws Exception {
+        return jdbcTemplate.queryForObject("SELECT * FROM customer WHERE contact = ? AND id <> ?",
+                CUSTOMER_ROW_MAPPER, contact, id) != null;
+    }
+
 }
