@@ -4,25 +4,28 @@ import lk.ijse.dep10.pos.business.custom.ItemBO;
 import lk.ijse.dep10.pos.business.exception.BusinessException;
 import lk.ijse.dep10.pos.business.exception.BusinessExceptionType;
 import lk.ijse.dep10.pos.business.util.Transformer;
-import lk.ijse.dep10.pos.dao.DAOFactory;
-import lk.ijse.dep10.pos.dao.DAOType;
 import lk.ijse.dep10.pos.dao.custom.ItemDAO;
 import lk.ijse.dep10.pos.dao.custom.OrderDetailDAO;
 import lk.ijse.dep10.pos.dto.ItemDTO;
+import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class ItemBOImpl implements ItemBO {
 
-    private final ItemDAO itemDAO = DAOFactory.getInstance().getDAO(DAOType.ITEM);
-    private final OrderDetailDAO orderDetailDAO = DAOFactory.getInstance().getDAO(DAOType.ORDER_DETAIL);
-    private final Transformer transformer = new Transformer();
+    private final ItemDAO itemDAO;
+    private final OrderDetailDAO orderDetailDAO;
+    private final Transformer transformer;
     private final DataSource dataSource;
 
-    public ItemBOImpl(DataSource dataSource) {
+    public ItemBOImpl(ItemDAO itemDAO, OrderDetailDAO orderDetailDAO, Transformer transformer, DataSource dataSource) {
+        this.itemDAO = itemDAO;
+        this.orderDetailDAO = orderDetailDAO;
+        this.transformer = transformer;
         this.dataSource = dataSource;
     }
 

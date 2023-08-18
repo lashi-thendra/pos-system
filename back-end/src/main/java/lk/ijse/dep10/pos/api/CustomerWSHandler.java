@@ -1,6 +1,9 @@
 package lk.ijse.dep10.pos.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lk.ijse.dep10.pos.business.custom.CustomerBO;
+import lk.ijse.dep10.pos.business.exception.BusinessException;
+import lk.ijse.dep10.pos.business.exception.BusinessExceptionType;
 import lk.ijse.dep10.pos.dto.CustomerDTO;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,27 +18,19 @@ import java.sql.ResultSet;
 public class CustomerWSHandler extends TextWebSocketHandler {
 
     @Autowired
-    private BasicDataSource pool;
+    private CustomerBO customerBO;
     @Autowired
     private ObjectMapper objectMapper;
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        try (Connection connection = pool.getConnection()) {
-            PreparedStatement stm = connection
-                    .prepareStatement("SELECT * FROM customer WHERE id=? OR contact=?");
-            stm.setString(1, message.getPayload().strip());
-            stm.setString(2, message.getPayload().strip());
-            ResultSet resultSet = stm.executeQuery();
-            if (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                String name = resultSet.getString("name");
-                String address = resultSet.getString("address");
-                String contact = resultSet.getString("contact");
-                CustomerDTO customer = new CustomerDTO(id, name, address, contact);
-                String customerJSON = objectMapper.writeValueAsString(customer);
-                session.sendMessage(new TextMessage(customerJSON));
-            }
+        try {
+            CustomerDTO customer = customerBO
+                    .findCustomerByIdOrContact(message.getPayload().strip());
+            String customerJSON = objectMapper.writeValueAsString(customer);
+            session.sendMessage(new TextMessage(customerJSON));
+        } catch (BusinessException be) {
+            if (be.getType() != BusinessExceptionType.RECORD_NOT_FOUND) throw be;
         }
     }
 }

@@ -1,8 +1,6 @@
 package lk.ijse.dep10.pos.dao.custom.impl;
 
 import com.github.javafaker.Faker;
-import lk.ijse.dep10.pos.dao.DAOFactory;
-import lk.ijse.dep10.pos.dao.DAOType;
 import lk.ijse.dep10.pos.dao.TestConfig;
 import lk.ijse.dep10.pos.dao.custom.CustomerDAO;
 import lk.ijse.dep10.pos.entity.Customer;
@@ -12,7 +10,6 @@ import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.test.context.event.annotation.AfterTestClass;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.sql.Connection;

@@ -3,10 +3,12 @@ package lk.ijse.dep10.pos.business.custom.impl;
 import lk.ijse.dep10.pos.business.custom.OrderBO;
 import lk.ijse.dep10.pos.dto.OrderDTO;
 import lk.ijse.dep10.pos.dto.OrderDTO2;
+import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.util.List;
 
+@Component
 public class OrderBOImpl implements OrderBO {
 
     private final DataSource dataSource;
