@@ -19,4 +19,6 @@ public class BusinessException extends RuntimeException {
         super("Code: " + type.getCode() +"; " + message, cause);
         this.type = type;
     }
+
+    public BusinessExceptionType getType(){ return type;}
 }

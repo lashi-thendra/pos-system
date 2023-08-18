@@ -5,10 +5,12 @@ import lk.ijse.dep10.pos.business.BOType;
 import lk.ijse.dep10.pos.business.custom.ItemBO;
 import lk.ijse.dep10.pos.dto.ItemDTO;
 import lk.ijse.dep10.pos.dto.ResponseErrorDTO;
+import lk.ijse.dep10.pos.dto.util.ValidationGroups;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -42,7 +44,7 @@ public class ItemController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(consumes = "application/json")
-    public void saveItem(@RequestBody ItemDTO item) throws Exception {
+    public void saveItem(@RequestBody @Validated({ValidationGroups.Save.class}) ItemDTO item) throws Exception {
         ItemBO itemBO = BOFactory.getInstance().getBO(BOType.ITEM, pool);
         itemBO.saveItem(item);
     }

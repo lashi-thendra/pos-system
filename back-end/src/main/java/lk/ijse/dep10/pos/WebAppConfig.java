@@ -1,5 +1,6 @@
 package lk.ijse.dep10.pos;
 
+import lk.ijse.dep10.pos.advice.GlobalExceptionHandler;
 import lk.ijse.dep10.pos.api.CustomerController;
 import lk.ijse.dep10.pos.api.ItemController;
 import lk.ijse.dep10.pos.api.OrderController;
@@ -29,4 +30,8 @@ public class WebAppConfig {
         return new MethodValidationPostProcessor();
     }
 
+    @Bean
+    public GlobalExceptionHandler globalExceptionHandler(){
+        return new GlobalExceptionHandler();
+    }
 }
