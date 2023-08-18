@@ -2,6 +2,7 @@ package lk.ijse.dep10.pos.advice;
 
 import lk.ijse.dep10.pos.business.exception.BusinessException;
 import lk.ijse.dep10.pos.business.exception.BusinessExceptionType;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -19,11 +20,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<Map<String, Object>> handleBusinessException(BusinessException exp){
+        log.error(exp.getMessage(), exp);
         Map<String, Object> errorAttributes = null;
         if (exp.getType() == BusinessExceptionType.DUPLICATE_RECORD) {
             errorAttributes = getCommonErrorAttributes(HttpStatus.CONFLICT);
@@ -48,6 +51,7 @@ public class GlobalExceptionHandler {
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, Object> handleDataValidationExceptions(Exception exp){
+        log.error("Validation Failure", exp);
         Map<String, Object> errorAttributes = getCommonErrorAttributes(HttpStatus.BAD_REQUEST);
 
         if (exp instanceof MethodArgumentNotValidException){
@@ -89,6 +93,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Throwable.class)
     public Map<String, Object> handleExceptions(Throwable t){
+        log.error("Validation Failure", t);
         Map<String, Object> errorAttributes = getCommonErrorAttributes(HttpStatus.INTERNAL_SERVER_ERROR);
         errorAttributes.put("message", t.getMessage());
         t.printStackTrace();
