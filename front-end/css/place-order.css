@@ -72,3 +72,7 @@ main > section:first-child {
 #frm-order button {
     min-width: 130px;
 }
+
+#loader {
+    visibility: hidden;
+}

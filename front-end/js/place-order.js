@@ -19,9 +19,12 @@ let customer = null;
 let socket = null;
 let item = null;
 let cart;
+let priceOfSelectedItem;
+let quantityOfSelectedItem;
 
 console.log("trying to connect with web socket");
 socket = new WebSocket(`ws://localhost:8080/pos/api/v1/customers-ws`);
+
 console.log("connected with web socket");
 cart = new Cart((total)=> netTotalElm.text(formatPrice(total)));
 updateOrderDetails();
@@ -60,9 +63,10 @@ txtCode.on('change',()=>{
 });
 frmOrder.on('submit',(eventData)=>{
     eventData.preventDefault();
-    console.log(item.qty,txtQty.val() );
-    if(item.qty < +txtQty.val() || +txtQty.val() <= 0 ){
-        console.log("working");
+    
+    const stocks = +$("#stock span").text();
+    console.log(stocks);
+    if(stocks< +txtQty.val() || +txtQty.val() <= 0 ){
         txtQty.addClass('is-invalid');
         txtQty.trigger('select');
         return;
@@ -71,7 +75,7 @@ frmOrder.on('submit',(eventData)=>{
     item.qty = +txtQty.val();
     txtQty.removeClass('is-invalid');
 
-    console.log(cart)
+    console.log(item.unitPrice, item.qty)
 
     if (cart.containItem(item.code)) {
         const codeElm = Array.from(tbodyElm.find("tr td:first-child .code")).find(codeElm => $(codeElm).text() === item.code);
@@ -80,7 +84,7 @@ frmOrder.on('submit',(eventData)=>{
 
         cart.updateItemQty(item.code, cart.getItem(item.code).qty + item.qty);
         qtyElm.text(cart.getItem(item.code).qty);
-        priceElm.text(formatNumber(Big(cart.getItem(item.code).qty).times(item.price)));
+        priceElm.text(formatNumber(Big(cart.getItem(item.code).qty).times(item.unitPrice)));
     } else {
         addItemToTable(item);
         cart.addItem(item);
@@ -129,15 +133,16 @@ function findItem(code){
     const jqxhr = $.ajax(`${REST_API_BASE_URL}/items/${code}`);
 
     jqxhr.done((itemData)=>{
+        console.log(itemData)
         if (itemData.length === 0){
             itemInfoElm.addClass('d-none');
             return;
         }
-        item = itemData[0];
+        item = itemData;
         console.log(item);
         description.text(item.description);
         stock.text(item.qty);
-        unitPrice.text(formatPrice(item.price));
+        unitPrice.text(formatPrice(item.unitPrice));
         if(item.qty){
             frmOrder.removeClass("d-none");
         }else{
@@ -190,10 +195,10 @@ function addItemToTable(item) {
                         ${item.qty}
                     </td>
                     <td>
-                        ${formatNumber(item.price)}
+                        ${formatNumber(item.unitPrice)}
                     </td>
                     <td>
-                        ${formatNumber(Big(item.price).times(Big(item.qty)))}
+                        ${formatNumber(Big(item.unitPrice).times(Big(item.qty)))}
                     </td>
                 </tr>`);
     tbodyElm.append(trElm);
@@ -215,6 +220,8 @@ function placeOrder(){
     cart.dateTime = orderDateTimeElm.text();
     btnPlaceOrder.attr('disabled', true);
     const xhr = new XMLHttpRequest();
+
+    console.log(cart);
 
     const jqxhr = $.ajax(`${REST_API_BASE_URL}/orders`, {
         method: 'POST',

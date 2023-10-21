@@ -21,11 +21,15 @@ btnSaveItem.on('click',()=>{
 
     const description = txtDesc.val().trim();
     const qty = txtQuantity.val().trim();
-    const price = txtPrice.val().trim();
+    const unitPrice = txtPrice.val().trim();
+    const code = txtCode.val().trim();
 
     let item = {
-        description, qty, price
+
+        code,description, qty, unitPrice
     };
+
+    console.log(item);
 
     const xhr = new XMLHttpRequest();
 
@@ -56,7 +60,7 @@ btnSaveItem.on('click',()=>{
 });
 tbodyElmItems.on('click', ".delete", (eventData)=> {
 
-    const id = +$(eventData.target).parents("tr").children("td:first-child").text().replace('C', '');
+    const id = $(eventData.target).parents("tr").children("td:first-child").text().replace('I', '');
     console.log(id);
     const xhr = new XMLHttpRequest();
     const jqxhr = $.ajax(`${REST_API_BASE_URL}/items/${id}`, {
@@ -91,7 +95,7 @@ function getItems(){
                         <td class="text-center">${formatItemCode(item.code)}</td>
                         <td>${item.description}</td>
                         <td class=" d-xl-table-cell">${item.qty}</td>
-                        <td class="contact text-center">${item.price}</td>
+                        <td class="contact text-center">${item.unitPrice}</td>
                         <td>
                             <div class="actions d-flex gap-3 justify-content-center">
                                 <svg data-bs-toggle="tooltip" data-bs-title="Edit item" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
@@ -154,21 +158,21 @@ function validateData(){
     resetForm();
 
     if (!price) {
-        valid = invalidate(txtPrice, "Address can't be empty");
+        valid = invalidate(txtPrice, "Description can't be empty");
     } else if (!/.{3,}/.test(price)) {
-        valid = invalidate(txtPrice, 'Invalid address');
+        valid = invalidate(txtPrice, 'Invalid descrption');
     }
 
     if (!qty) {
-        valid = invalidate(txtQuantity, "Contact number can't be empty");
-    } else if (!/^\d{3}-\d{7}$/.test(qty)) {
-        valid = invalidate(txtQuantity, 'Invalid contact number');
+        valid = invalidate(txtQuantity, "quantity can't be empty");
+    } else if (!/^\d*$/.test(qty)) {
+        valid = invalidate(txtQuantity, 'Invalid quantity');
     }
 
     if (!dec) {
-        valid = invalidate(txtDesc, "Name can't be empty");
+        valid = invalidate(txtDesc, "price can't be empty");
     } else if (!/^[A-Za-z ]+$/.test(dec)) {
-        valid = invalidate(txtDesc, "Invalid name");
+        valid = invalidate(txtDesc, "Invalid price");
     }
 
     return valid;
